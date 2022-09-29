@@ -78,21 +78,21 @@ The key's randomart image is:
 |X*Bo             |
 +----[SHA256]-----+
 ```
-- Upload public key `/root/.ssh/id_rsa.pub` in your local server to remote server
+- Upload public key `/root/.ssh/id_rsa.pub` in your local server to remote server running your validator node
 ```
-cat $HOME/.ssh/id_rsa.pub | ssh root@144.91.127.214 "mkdir -p /root/.ssh && cat >> /root/.ssh/authorized_keys"
+cat $HOME/.ssh/id_rsa.pub | ssh root@94.130.239.162 "mkdir -p /root/.ssh && cat >> /root/.ssh/authorized_keys"
 ```
-- Try to login remote server by SSH key from your local server with newly SSH_PORT in step 2
+- Try to login the remote server by SSH key from your local server with newly SSH_PORT in step 2
 ```
-ssh root@144.91.127.214 -p NEW_SSH_PORT
+ssh root@94.130.239.162 -p NEW_SSH_PORT
 ```
 Log will be as below
 ```
-root@Contabo8g-036:~/.ssh# ssh root@144.91.127.214
-The authenticity of host '144.91.127.214 (144.91.127.214)' can't be established.
+root@Contabo8g-036:~/.ssh# ssh root@94.130.239.162
+The authenticity of host '94.130.239.162 (94.130.239.162)' can't be established.
 ECDSA key fingerprint is SHA256:AOb4WT2Y1m02/yPnEp4mMXL29iOAeabBzhJx45wNDU8.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added '144.91.127.214' (ECDSA) to the list of known hosts.
+Warning: Permanently added '94.130.239.162' (ECDSA) to the list of known hosts.
 Enter passphrase for key '/root/.ssh/id_rsa':
 Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-105-generic x86_64)
 ```
@@ -101,4 +101,5 @@ Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-105-generic x86_64)
 sed -i.bak -e 's|#PasswordAuthentication yes|PasswordAuthentication no|g' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 ```
+
 
