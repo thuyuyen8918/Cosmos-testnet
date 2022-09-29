@@ -9,6 +9,10 @@ LOG_SESSION="$HOME/.alerting/logsession.log"
 # Your node RPC address, e.g. "http://127.0.0.1:26657"
 NODE_RPC="http://127.0.0.1:26657"
 
+# Your validator address
+YOUR_VAL="haqqvaloper1mc0kvscpucsndf948dnsrrpd954t9l4lfqevk6"
+GURU_API="https://haqq.api.explorers.guru/api/validators/$YOUR_VAL"
+
 # YOUR node name
 NODE_NAME="HAQQ-Test"
 
@@ -38,6 +42,9 @@ ADDRESS=$(echo $STATUS | jq '.result.validator_info.address' | xargs )
 NODE_VERSION=$(curl -s "$NODE_RPC/abci_info" | jq .result.response.version | tr -d \\ | tr -d '"')
 TRUSTED_RPC_VERSION=$(curl -s "$PUBLIC_TRUSTED_RPC//abci_info" --connect-timeout 20 | jq .result.response.version | tr -d \\ | tr -d '"')
 
+# Collect validator status
+VAL_STATUS=$(curl -s $GURU_API | jq .jailed)
+
 source $LOG_FILE
 echo 'LAST_BLOCK="'"$LATEST_BLOCK"'"' > $LOG_FILE
 echo 'LAST_POWER="'"$VOTING_POWER"'"' >> $LOG_FILE
@@ -53,6 +60,12 @@ fi
 
 if [ "$NODE_VERSION" != "$TRUSTED_RPC_VERSION" ]; then
     MSG="Node $NODE_NAME with $ip is running wrong version $NODE_VERSION. Correct version is $TRUSTED_RPC_VERSION!!!"
+    sendmail $EMAIL <<< "Subject: $MSG"
+    SEND=$(curl -s -X POST -H "Content-Type:multipart/form-data" "https://api.telegram.org/bot$TG_API/sendMessage?chat_id=$TG_ID&text=$MSG");
+fi
+
+if [[ $VAL_STATUS = "true" ]]; then
+    MSG=" Node $NODE_NAME with $ip is jailed !!!"
     sendmail $EMAIL <<< "Subject: $MSG"
     SEND=$(curl -s -X POST -H "Content-Type:multipart/form-data" "https://api.telegram.org/bot$TG_API/sendMessage?chat_id=$TG_ID&text=$MSG");
 fi
