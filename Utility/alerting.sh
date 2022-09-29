@@ -3,6 +3,9 @@
 # File name for saving parameters
 LOG_FILE="$HOME/.alerting/alerting.log"
 
+# File name stores login session in today
+LOG_SESSION="$HOME/.alerting/logsession.log"
+
 # Your node RPC address, e.g. "http://127.0.0.1:26657"
 NODE_RPC="http://127.0.0.1:26657"
 
@@ -88,3 +91,10 @@ if [[ $REAL_BLOCK -eq 0 ]]; then
     SEND=$(curl -s -X POST -H "Content-Type:multipart/form-data" "https://api.telegram.org/bot$TG_API/sendMessage?chat_id=$TG_ID&text=$MSG");
 
 fi
+
+touch $LOG_SESSION
+echo "Subject: List of login session to your server" > $LOG_SESSION
+last -s today >> $LOG_SESSION
+MSG="Last login session in today: `last -s today | awk '{print $3}' |grep ^[0-9] | tr '\t' ' '`"
+sendmail $EMAIL < $LOG_SESSION
+SEND=$(curl -s -X POST -H "Content-Type:multipart/form-data" "https://api.telegram.org/bot$TG_API/sendMessage?chat_id=$TG_ID&text=$MSG");
