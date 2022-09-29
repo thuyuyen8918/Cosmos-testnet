@@ -60,3 +60,7 @@ sed -i.bak -e "s/^EMAIL=.*/EMAIL=\"$YOUR_EMAIL\"/g" $HOME/.alerting/alerting.sh
 ```
 
 - Stop your node, then check alerting on your TeleBot and email
+![image](https://user-images.githubusercontent.com/109055532/193003259-9a7c51d1-f160-4370-a627-344016eca8c9.png)
+
+![image](https://user-images.githubusercontent.com/109055532/193003333-5091b2bd-a2c6-4102-b5d6-b1b0e8a500df.png)
+
