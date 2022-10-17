@@ -80,21 +80,11 @@ The key's randomart image is:
 ```
 - Upload public key `/root/.ssh/id_rsa.pub` in your local server to remote server running your validator node
 ```
-cat $HOME/.ssh/id_rsa.pub | ssh root@94.130.239.162 "mkdir -p /root/.ssh && cat >> /root/.ssh/authorized_keys"
+cat $HOME/.ssh/id_rsa.pub | ssh root@xxx.xxx.xxx.xxx "mkdir -p /root/.ssh && cat >> /root/.ssh/authorized_keys"
 ```
 - Try to login the remote server by SSH key from your local server with newly SSH_PORT in step 2
 ```
-ssh root@94.130.239.162 -p NEW_SSH_PORT
-```
-Log will be as below
-```
-root@Contabo8g-036:~/.ssh# ssh root@94.130.239.162
-The authenticity of host '94.130.239.162 (94.130.239.162)' can't be established.
-ECDSA key fingerprint is SHA256:AOb4WT2Y1m02/yPnEp4mMXL29iOAeabBzhJx45wNDU8.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added '94.130.239.162' (ECDSA) to the list of known hosts.
-Enter passphrase for key '/root/.ssh/id_rsa':
-Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-105-generic x86_64)
+ssh root@xxx.xxx.xxx.xxx -p NEW_SSH_PORT
 ```
 - Disabling Password Authentication on your Server
 ```
@@ -102,4 +92,49 @@ sed -i.bak -e 's|#PasswordAuthentication yes|PasswordAuthentication no|g' /etc/s
 sudo systemctl restart sshd
 ```
 
+### 4. Install fail2ban to prevent Brute Force Attack on your node
+- Install software
+```
+sudo apt-get install fail2ban
+```
+
+- Fail2ban will create a file `/etc/fail2ban/jail.conf`, dont touch the file. Then create a file `/etc/fail2ban/jail.local`
+```
+vim /etc/fail2ban/jail.local
+```
+
+- Edit `jail.local` as below
+```
+[DEFAULT]
+ bantime = 600 # Set 60s for blocked time to blocked IP 
+ # Ignore localhost and you IP, replaced xxx by your IP
+ ignoreip = 127.0.0.1/8 xxx.xxx.xxx.xxx 
+ ignoreself = true
+
+[sshd]
+enabled = true
+# newly customized ssh port was created in previous steps
+port = 3012
+filter = sshd
+# action = iptables
+# sendmail-whois
+logpath = /var/log/auth.log
+maxretry = 3
+```
+
+- Restart fail2ban
+```
+sudo systemctl restart fail2ban
+```
+
+- Check blocked IP
+```
+sudo systemctl fail2ban status
+sudo fail2ban-client status
+sudo fail2ban-client status sshd
+```
+
+- Unblock IP
+```
+sudo fail2ban-client set sshd unbanip <blocked_IP>
 
